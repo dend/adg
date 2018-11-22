@@ -11,3 +11,4 @@ Command Line Interface (CLI) for generating API documentation through DocFX, tha
 | Python | `py` |
 | REST | `rest` |
 | .NET | `net` |
+| Java | `java` |
