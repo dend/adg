@@ -6,11 +6,15 @@ from helpers.commandprocessor import *
 import argparse
 
 parser = argparse.ArgumentParser(description='adg - version 1.0.21-jan-2019')
-parser.add_argument('--library', metavar='L', type=str, nargs='+',
+
+subparsers = parser.add_subparsers(dest="commands_parser")
+make_parser = subparsers.add_parser('make')
+
+make_parser.add_argument('--library', metavar='L', type=str, nargs='+',
                    help='A single or space-separated list of libraries to document.')
-parser.add_argument('--platform', type=str, metavar='P',
+make_parser.add_argument('--platform', type=str, metavar='P',
                    help='Target platform for the documented library.')
-parser.add_argument('--out', type=str, metavar='O',
+make_parser.add_argument('--out', type=str, metavar='O',
                    help='Output path for the generated documentation.')
 
 args = parser.parse_args()
