@@ -14,7 +14,6 @@ parser.add_argument('--out', type=str, metavar='O',
                    help='Output path for the generated documentation.')
 
 args = parser.parse_args()
-print(args.accumulate(args.integers))
 
 # Check for the operating system. This will determine how we handle
 # CLI commands being passed to the DocFX tooling.
@@ -32,7 +31,7 @@ print ('[info] Operating environment: ', current_os)
 
 # Check for command line arguments and verify the integrity of those.
 
-if ((len(argv) <= 2)):
+if (not len(argv) > 1):
     print('[error] No command line arguments supplied to the CLI. Terminating.')
 else:
-    CommandProcessor.validate(argv)
+    CommandProcessor.validate(args)
