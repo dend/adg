@@ -1,6 +1,29 @@
 import os
 import shutil
 from urllib.parse import urlparse
+from helpers.coreutil import *
+import subprocess
+import re
+
+class Validator(object):
+    @staticmethod
+    def validate_url(url):
+        # This is taken from Stack Overflow: https://stackoverflow.com/a/7160778
+        regex = re.compile(
+            r'^(?:http|ftp)s?://' # http:// or https://
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+            r'localhost|' #localhost...
+            r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+            r'(?::\d+)?' # optional port
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+        return re.match(regex, url) is not None
+
+class LibraryInstaller(object):
+    @staticmethod
+    def install_python_library(library):
+        process_result = subprocess.run(['pip3', 'install', '-t', 'dtemp/packages', library], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        print(process_result.stdout) 
 
 class PresenceVerifier(object):
     @staticmethod
@@ -11,19 +34,28 @@ class PresenceVerifier(object):
             return False
 
     @staticmethod
-    def mono_exists():
-        return shutil.which('mono') is not None
+    def shell_command_exists(command):
+        return shutil.which(command) is not None
 
 class LibraryProcessor(object):
     @staticmethod
     def process_libraries(libraries, platform):
         if (platform.lower() == 'python'):
-            for library in libraries:
-                try:
-                    url_parse_result = urlparse(library)
-                    domain = url_parse_result.netloc
-                    if (domain.lower().endswith("github.com")):
-                        print (f'[info] Getting the {library} from GitHub...')
-                except:
-                    print (f'[info] The {library} is not a direct pointer - attempting to read from PyPI.')
-                    # Not a URL, so we should try taking this as a PyPI package.
+            if (PresenceVerifier.shell_command_exists('pip3')):
+                for library in libraries:
+                    if (Validator.validate_url(library)):
+                        try:
+                            url_parse_result = urlparse(library)
+                            domain = url_parse_result.netloc
+                            if (domain.lower().endswith("github.com")):
+                                print (f'[info] Getting {library} from GitHub...')
+                            else:
+                                print (f'[info] Getting {library} from a direct source...')
+                        except:
+                            print ('[error] Could not install library from source.')
+                            # Not a URL, so we should try taking this as a PyPI package.
+                    else:
+                        print (f'[info] The {library} is not a direct pointer - attempting to read from PyPI.')
+                        LibraryInstaller.install_python_library(library)
+            else:
+                print ('[error] Could not find an installed pip3 tool. Make sure that Python tooling is installed if you are documenting Python packages.')

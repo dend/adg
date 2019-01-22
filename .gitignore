@@ -2,3 +2,4 @@
 .vscode/settings.json
 *.pyc
 src/dbin/*
+src/dtemp/*
