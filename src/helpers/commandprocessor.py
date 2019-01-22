@@ -14,6 +14,10 @@ class CommandProcessor(object):
                     if (platform == OperatingSystem.macos) or (platform == OperatingSystem.linux):
                         if (not PresenceVerifier.mono_exists()):
                             print ('[error] You are running on a system that requires the Mono framework installed, and it was not found.')
+                    
+                    print (f'[info] Collecting information on {len(command.library)} libraries...')
+
+                    LibraryProcessor.process_libraries(command.library, command.platform)
                 else:
                     print ('[error] Could not find DocFX locally. Please verify that the package was properly installed.')
             else:
