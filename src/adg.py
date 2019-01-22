@@ -38,4 +38,4 @@ print ('[info] Operating environment: ', current_os)
 if (not len(argv) > 1):
     print('[error] No command line arguments supplied to the CLI. Terminating.')
 else:
-    CommandProcessor.validate(args)
+    CommandProcessor.validate(args, current_os)
