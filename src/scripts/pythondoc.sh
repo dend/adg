@@ -14,6 +14,7 @@ sphinx-apidoc . -o . --module-first --no-headings --no-toc --implicit-namespaces
 sphinx-build . _build
 ls _build/docfx_yaml
 pwd
-cp -a _build/docfx_yaml/. ../../_docs/docfx_project/api/
-cd ../../_docs/docfx_project
-mono ../../_docfx/docfx.exe
+cp -a _build/docfx_yaml/. $3
+cd $3
+cd ..
+mono ../dbin/docfx/docfx.exe

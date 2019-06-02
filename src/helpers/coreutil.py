@@ -48,7 +48,7 @@ class PresenceVerifier(object):
 
 class LibraryProcessor(object):
     @staticmethod
-    def process_libraries(libraries, platform):
+    def process_libraries(libraries, platform, docpath):
         if (platform.lower() == 'python'):
             if (PresenceVerifier.shell_command_exists('pip3')):
                 for library in libraries:
@@ -68,13 +68,19 @@ class LibraryProcessor(object):
                         LibraryInstaller.install_python_library(library)
 
                         # TODO: Need to implement a check that verifies whether the library was really installed.
-                        LibraryDocumenter.document_python_library(library)
+                        LibraryDocumenter.document_python_library(library, docpath)
             else:
                 print ('[error] Could not find an installed pip3 tool. Make sure that Python tooling is installed if you are documenting Python packages.')
 
 class LibraryDocumenter(object):
     @staticmethod
-    def document_python_library(library):
+    def document_python_library(library, docpath):
+        true_docpath = docpath
+        if not docpath:
+            process_result = subprocess.run(['mono', 'dbin/docfx/docfx.exe', 'init', '-q', '-o', 'dsite'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ConsoleUtil.pretty_stdout(process_result.stdout)
+            true_docpath = "dsite/api"
+
         process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if 'spinx-docfx-yaml' in process_result.stdout.decode('utf-8'):
             # We have the extension (https://github.com/docascode/sphinx-docfx-yaml) installed
@@ -82,14 +88,16 @@ class LibraryDocumenter(object):
         else:
             print ('[info] Installing sphinx-docfx-yaml...')
             process_result = subprocess.run(['pip3', 'install', 'sphinx-docfx-yaml', '--user'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            print(process_result.stdout)
+            ConsoleUtil.pretty_stdout(process_result.stdout)
 
         print (f'[info] Processing documentation for {library}...')
-        # process_result = subprocess.run(['ls'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        # print(process_result.stdout)
-        process_result = subprocess.run(['sh', 'scripts/pythondoc.sh', 'dtemp/packages', library.replace('-','/')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        output = str(process_result.stdout)
+        process_result = subprocess.run(['sh', 'scripts/pythondoc.sh', 'dtemp/packages', library.replace('-','/'), os.path.abspath(true_docpath)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        ConsoleUtil.pretty_stdout(process_result.stdout)        
+
+class ConsoleUtil(object):
+    @staticmethod
+    def pretty_stdout(stdout):
+        output = str(stdout)
         output = output.split('\\n')
-        # print out our list of windows
         for x in range(len(output)):
             print (output[x])

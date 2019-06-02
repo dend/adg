@@ -18,6 +18,8 @@ make_parser.add_argument('--out', type=str, metavar='O',
                    help='Output path for the generated documentation.')
 make_parser.add_argument('--auto-install', type=bool, metavar='A',
                    help='Determines whether helper tools need to be installed automatically.')
+make_parser.add_argument('--docpath', type=bool, metavar='D',
+                   help='Path to the documentation folder where the content needs to be saved.')
 
 args = parser.parse_args()
 
