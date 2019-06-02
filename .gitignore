@@ -3,3 +3,5 @@
 *.pyc
 src/dbin/*
 src/dtemp/*
+.DS_Store
+*.zip

@@ -65,5 +65,26 @@ class LibraryProcessor(object):
                     else:
                         print (f'[info] The {library} is not a direct pointer - attempting to read from PyPI.')
                         LibraryInstaller.install_python_library(library)
+
+                        # TODO: Need to implement a check that verifies whether the library was really installed.
+                        LibraryDocumenter.document_python_library(library)
             else:
                 print ('[error] Could not find an installed pip3 tool. Make sure that Python tooling is installed if you are documenting Python packages.')
+
+class LibraryDocumenter(object):
+    @staticmethod
+    def document_python_library(library):
+        process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        if 'spinx-docfx-yaml' in process_result.stdout.decode('utf-8'):
+            # We have the extension (https://github.com/docascode/sphinx-docfx-yaml) installed
+            print ('[info] The sphinx-docfx-yaml extension is already installed.')
+        else:
+            print ('[info] Installing sphinx-docfx-yaml...')
+            process_result = subprocess.run(['pip3', 'install', 'sphinx-docfx-yaml', '--user'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            print(process_result.stdout)
+
+        print (f'[info] Processing documentation for {library}...')
+        # process_result = subprocess.run(['ls'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # print(process_result.stdout)
+        process_result = subprocess.run(['sh', 'scripts/pythondoc.sh', 'dtemp/packages', library.replace('-','/')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        print(process_result.stdout)
