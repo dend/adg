@@ -1,9 +1,11 @@
 import os
 import shutil
 from urllib.parse import urlparse
+import urllib.request
 from helpers.coreutil import *
 import subprocess
 import re
+import zipfile
 
 class Validator(object):
     @staticmethod
@@ -27,10 +29,16 @@ class LibraryInstaller(object):
 
 class PresenceVerifier(object):
     @staticmethod
-    def docfx_exists():
+    def docfx_exists(auto_install):
         if (os.path.exists('dbin/docfx/docfx.exe')):
             return True
         else:
+            if auto_install:
+                print('Donwloading and extracting DocFX...')
+                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip", "temp_docfx.zip")
+                with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
+                    zip_ref.extractall("dbin/docfx")
+                return True
             return False
 
     @staticmethod
