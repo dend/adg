@@ -6,6 +6,7 @@ from helpers.coreutil import *
 import subprocess
 import re
 import zipfile
+import io
 
 class Validator(object):
     @staticmethod
@@ -87,4 +88,8 @@ class LibraryDocumenter(object):
         # process_result = subprocess.run(['ls'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         # print(process_result.stdout)
         process_result = subprocess.run(['sh', 'scripts/pythondoc.sh', 'dtemp/packages', library.replace('-','/')], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(process_result.stdout)
+        output = str(process_result.stdout)
+        output = output.split('\\n')
+        # print out our list of windows
+        for x in range(len(output)):
+            print (output[x])
