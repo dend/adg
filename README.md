@@ -4,11 +4,11 @@ Command Line Interface (CLI) for generating API documentation through DocFX, tha
 
 ## Supported platforms
 
-| Platform | `-platform` parameter value |
-|:---------|:----------------------------|
-| JavaScript | `js` |
-| TypeScript | `ts` |
-| Python | `py` |
-| REST | `rest` |
-| .NET | `net` |
-| Java | `java` |
+| Platform   | `-platform` parameter value | Status            | 
+|:-----------|:----------------------------|:------------------|
+| JavaScript | `js`                        | 🧱 Not Started     |
+| TypeScript | `ts`                        | 🧱 Not Started     |
+| Python     | `py`                        | 🚧 In Development | 
+| REST       | `rest`                      | 🧱 Not Started     |
+| .NET       | `net`                       | 🧱 Not Started     |
+| Java       | `java`                      | 🧱 Not Started     |
