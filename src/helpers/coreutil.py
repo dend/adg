@@ -7,6 +7,7 @@ import subprocess
 import re
 import zipfile
 import io
+import shutil
 
 class Validator(object):
     @staticmethod
@@ -36,9 +37,10 @@ class PresenceVerifier(object):
         else:
             if auto_install:
                 print('Donwloading and extracting DocFX...')
-                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip", "temp_docfx.zip")
-                with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
-                    zip_ref.extractall("dbin/docfx")
+                urllib.request.urlretrieve('https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip', 'temp_docfx.zip')
+                with zipfile.ZipFile('temp_docfx.zip', 'r') as zip_ref:
+                    zip_ref.extractall('dbin/docfx')
+                os.remove('temp_docfx.zip')
                 return True
             return False
 
@@ -56,7 +58,7 @@ class LibraryProcessor(object):
                         try:
                             url_parse_result = urlparse(library)
                             domain = url_parse_result.netloc
-                            if (domain.lower().endswith("github.com")):
+                            if (domain.lower().endswith('github.com')):
                                 print (f'[info] Getting {library} from GitHub...')
                             else:
                                 print (f'[info] Getting {library} from a direct source...')
@@ -69,6 +71,7 @@ class LibraryProcessor(object):
 
                         # TODO: Need to implement a check that verifies whether the library was really installed.
                         LibraryDocumenter.document_python_library(library, docpath)
+                        shutil.rmtree('dtemp')
             else:
                 print ('[error] Could not find an installed pip3 tool. Make sure that Python tooling is installed if you are documenting Python packages.')
 
@@ -79,7 +82,7 @@ class LibraryDocumenter(object):
         if not docpath:
             process_result = subprocess.run(['mono', 'dbin/docfx/docfx.exe', 'init', '-q', '-o', 'dsite'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ConsoleUtil.pretty_stdout(process_result.stdout)
-            true_docpath = "dsite/api"
+            true_docpath = 'dsite/api'
 
         process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if 'spinx-docfx-yaml' in process_result.stdout.decode('utf-8'):
