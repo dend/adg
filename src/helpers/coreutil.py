@@ -32,26 +32,6 @@ class LibraryInstaller(object):
 
 class PresenceVerifier(object):
     @staticmethod
-    def docfx_exists(auto_install):
-        if (os.path.exists('dbin/docfx/docfx.exe')):
-            return True
-        else:
-            if auto_install:
-                print('[info] Downloading and extracting DocFX...')
-                docfx_url = GitHubUtil.get_latest_release('dotnet/docfx')
-
-                if docfx_url:
-                    print(f'[info] Found latest DocFX at {docfx_url}')
-                    urllib.request.urlretrieve(docfx_url, 'temp_docfx.zip')
-                    with zipfile.ZipFile('temp_docfx.zip', 'r') as zip_ref:
-                        zip_ref.extractall('dbin/docfx')
-                    os.remove('temp_docfx.zip')
-                    return True
-                
-                print('[info] Could not download DocFX.')
-            return False
-
-    @staticmethod
     def shell_command_exists(command):
         return shutil.which(command) is not None
 
@@ -87,9 +67,7 @@ class LibraryDocumenter(object):
     def document_python_library(library, docpath):
         true_docpath = docpath
         if not docpath:
-            process_result = subprocess.run(['mono', 'dbin/docfx/docfx.exe', 'init', '-q', '-o', 'dsite'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            ConsoleUtil.pretty_stdout(process_result.stdout)
-            true_docpath = 'dsite/api'
+            true_docpath = os.getcwd()
 
         process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if 'spinx-docfx-yaml' in process_result.stdout.decode('utf-8'):
@@ -111,19 +89,3 @@ class ConsoleUtil(object):
         output = output.split('\\n')
         for x in range(len(output)):
             print (output[x])
-
-class GitHubUtil(object):
-    @staticmethod
-    def get_latest_release(repository):
-        url = f'https://api.github.com/repos/{repository}/releases/latest'
-        request = urllib.request.Request(url)
-
-        response = urllib.request.urlopen(request).read()
-        content = json.loads(response.decode('utf-8'))
-
-        asset_container = content['assets']
-        target_url = next((item for item in asset_container if item['browser_download_url'].endswith('/docfx.zip')), None)
-
-        if target_url:
-            return target_url['browser_download_url']
-        return target_url
