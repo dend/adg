@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 #cSpell:ignore nargs, macos, cygwin
 
-from sys import platform, argv
+from sys import argv
 from helpers.types import OperatingSystem
 from helpers.commandprocessor import CommandProcessor
+from helpers.systemhelper import SystemHelper
 import argparse
 
 parser = argparse.ArgumentParser(description='adg - version 1.0.2-june-2019')
@@ -25,14 +26,7 @@ args = parser.parse_args()
 # Check for the operating system. This will determine how we handle
 # CLI commands being passed to the DocFX tooling.
 
-current_os = OperatingSystem.other
-
-if platform == "linux" or platform == "linux2":
-    current_os = OperatingSystem.linux
-elif platform == "darwin":
-    current_os = OperatingSystem.macos
-elif platform == "win32" or platform == "cygwin":
-    current_os = OperatingSystem.windows
+current_os = SystemHelper.get_operating_system()
 
 print ('[info] Operating environment: ', current_os)
 

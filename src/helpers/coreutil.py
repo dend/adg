@@ -1,13 +1,16 @@
-# cSpell:ignore shutil, dtemp, dbin, docfx, dsite
+# cSpell:ignore shutil, dtemp, dbin, docfx, dsite, venv, macos
 
 import os
 import shutil
 from urllib.parse import urlparse
+from .types import OperatingSystem
+from .systemhelper import SystemHelper
 import urllib.request
 import subprocess
 import re
 import zipfile
 import io
+import sys
 
 class Validator(object):
     @staticmethod
@@ -26,7 +29,26 @@ class Validator(object):
 class LibraryInstaller(object):
     @staticmethod
     def install_python_library(library):
-        process_result = subprocess.run(['pip3', 'install', '-t', 'dtemp/packages', library], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # process_result = subprocess.run(['python', 'install', '-t', 'dtemp/packages', library], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # print(process_result.stdout)
+
+        os = SystemHelper.get_operating_system()
+
+        if (os == OperatingSystem.macos) or (os == OperatingSystem.linux):
+            print('[info] Starting the virtual environment...')
+            process_result = subprocess.run(['source', 'dtemp/bin/activate'], executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            print(process_result.stdout)
+        else:
+            print ('[info] Virtual environment activation is not yet implemented for Windows.')
+
+        # Check if we're running inside a virtual environment. If this is not the case, we need to avoid processing.
+        if hasattr(sys, 'base_prefix'):
+            print(f'[info] Running inside virtual {sys.prefix} environment.')
+            
+    @staticmethod
+    def create_environment():
+        print('[info] Creating a local virtual environment...')
+        process_result = subprocess.run(['python', '-m', 'venv', 'dtemp'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         print(process_result.stdout)
 
 class PresenceVerifier(object):
@@ -36,7 +58,7 @@ class PresenceVerifier(object):
             return True
         else:
             if auto_install:
-                print('Downloading and extracting DocFX...')
+                print('[info] Downloading and extracting DocFX...')
                 urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip", "temp_docfx.zip")
                 with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
                     zip_ref.extractall("dbin/docfx")
@@ -65,6 +87,9 @@ class LibraryProcessor(object):
                             print ('[error] Could not install library from source.')
                             # Not a URL, so we should try taking this as a PyPI package.
                     else:
+                        print (f'[info] Bootstrapping the virtual environment...')
+                        LibraryInstaller.create_environment()
+
                         print (f'[info] The {library} is not a direct pointer - attempting to read from PyPI.')
                         LibraryInstaller.install_python_library(library)
 

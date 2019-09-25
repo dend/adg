@@ -1,7 +1,7 @@
 # cSpell:ignore coreutil, macos, docfx
 
-from coreutil import LibraryProcessor, PresenceVerifier
-from types import OperatingSystem
+from .coreutil import LibraryProcessor, PresenceVerifier
+from .types import OperatingSystem
 
 class CommandProcessor(object):
     @staticmethod
