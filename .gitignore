@@ -1,4 +1,4 @@
-
+adg_env/
 .vscode/settings.json
 *.pyc
 src/dbin/*

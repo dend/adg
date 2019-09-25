@@ -1,5 +1,7 @@
-from helpers.coreutil import *
-from helpers.types import *
+# cSpell:ignore coreutil, macos, docfx
+
+from coreutil import LibraryProcessor, PresenceVerifier
+from types import OperatingSystem
 
 class CommandProcessor(object):
     @staticmethod

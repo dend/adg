@@ -1,8 +1,9 @@
+# cSpell:ignore shutil, dtemp, dbin, docfx, dsite
+
 import os
 import shutil
 from urllib.parse import urlparse
 import urllib.request
-from helpers.coreutil import *
 import subprocess
 import re
 import zipfile
@@ -35,7 +36,7 @@ class PresenceVerifier(object):
             return True
         else:
             if auto_install:
-                print('Donwloading and extracting DocFX...')
+                print('Downloading and extracting DocFX...')
                 urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip", "temp_docfx.zip")
                 with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
                     zip_ref.extractall("dbin/docfx")
