@@ -27,7 +27,7 @@ class LibraryInstaller(object):
     @staticmethod
     def install_python_library(library):
         process_result = subprocess.run(['pip3', 'install', '-t', 'dtemp/packages', library], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(process_result.stdout) 
+        print(process_result.stdout)
 
 class PresenceVerifier(object):
     @staticmethod
