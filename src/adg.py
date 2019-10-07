@@ -7,7 +7,7 @@ from helpers.commandprocessor import CommandProcessor
 from helpers.systemhelper import SystemHelper
 import argparse
 
-parser = argparse.ArgumentParser(description='adg - version 1.0.2-june-2019')
+parser = argparse.ArgumentParser(description='adg - version 1.0.8-june-2019')
 
 subparsers = parser.add_subparsers(dest="commands_parser")
 make_parser = subparsers.add_parser('make')
@@ -18,8 +18,6 @@ make_parser.add_argument('--platform', type=str, metavar='P',
                    help='Target platform for the documented library.')
 make_parser.add_argument('--out', type=str, metavar='O',
                    help='Output path for the generated documentation.')
-make_parser.add_argument('--auto-install', type=bool, metavar='A',
-                   help='Determines whether helper tools need to be installed automatically.')
 
 args = parser.parse_args()
 

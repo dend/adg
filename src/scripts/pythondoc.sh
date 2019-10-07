@@ -15,6 +15,3 @@ sphinx-build . _build
 ls _build/docfx_yaml
 pwd
 cp -a _build/docfx_yaml/. $3
-cd $3
-cd ..
-mono ../dbin/docfx/docfx.exe

@@ -10,7 +10,8 @@ import subprocess
 import re
 import zipfile
 import io
-import sys
+import shutil
+import json
 
 class Validator(object):
     @staticmethod
@@ -79,7 +80,7 @@ class LibraryProcessor(object):
                         try:
                             url_parse_result = urlparse(library)
                             domain = url_parse_result.netloc
-                            if (domain.lower().endswith("github.com")):
+                            if (domain.lower().endswith('github.com')):
                                 print (f'[info] Getting {library} from GitHub...')
                             else:
                                 print (f'[info] Getting {library} from a direct source...')
@@ -95,6 +96,7 @@ class LibraryProcessor(object):
 
                         # TODO: Need to implement a check that verifies whether the library was really installed.
                         LibraryDocumenter.document_python_library(library, docpath)
+                        shutil.rmtree('dtemp')
             else:
                 print ('[error] Could not find an installed pip3 tool. Make sure that Python tooling is installed if you are documenting Python packages.')
 
@@ -103,9 +105,7 @@ class LibraryDocumenter(object):
     def document_python_library(library, docpath):
         true_docpath = docpath
         if not docpath:
-            process_result = subprocess.run(['mono', 'dbin/docfx/docfx.exe', 'init', '-q', '-o', 'dsite'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            ConsoleUtil.pretty_stdout(process_result.stdout)
-            true_docpath = "dsite/api"
+            true_docpath = os.getcwd()
 
         process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if 'spinx-docfx-yaml' in process_result.stdout.decode('utf-8'):
