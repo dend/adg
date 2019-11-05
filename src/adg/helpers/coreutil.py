@@ -12,6 +12,9 @@ import zipfile
 import io
 import shutil
 import json
+import venv
+
+virtual_environment_directory = "dtemp"
 
 class Validator(object):
     @staticmethod
@@ -30,27 +33,11 @@ class Validator(object):
 class LibraryInstaller(object):
     @staticmethod
     def install_python_library(library):
-        # process_result = subprocess.run(['python', 'install', '-t', 'dtemp/packages', library], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        # print(process_result.stdout)
-
-        os = SystemHelper.get_operating_system()
-
-        if (os == OperatingSystem.macos) or (os == OperatingSystem.linux):
-            print('[info] Starting the virtual environment...')
-            process_result = subprocess.run(['source', 'dtemp/bin/activate'], executable='/bin/bash', stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            print(process_result.stdout)
-        else:
-            print ('[info] Virtual environment activation is not yet implemented for Windows.')
-
-        # Check if we're running inside a virtual environment. If this is not the case, we need to avoid processing.
-        if hasattr(sys, 'base_prefix'):
-            print(f'[info] Running inside virtual {sys.prefix} environment.')
+       print("Installing...")        
             
     @staticmethod
     def create_environment():
-        print('[info] Creating a local virtual environment...')
-        process_result = subprocess.run(['python', '-m', 'venv', 'dtemp'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        print(process_result.stdout)
+        venv.create(virtual_environment_directory, with_pip=True)
 
 class PresenceVerifier(object):
     @staticmethod
