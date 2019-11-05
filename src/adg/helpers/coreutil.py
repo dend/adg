@@ -102,17 +102,18 @@ class LibraryDocumenter(object):
         if not os.path.exists(target_documentation_directory):
             os.mkdir(target_documentation_directory)
 
-        target_sphinx_directory = os.path.join(target_documentation_directory, "_sphinx")
-        if not os.path.exists(target_sphinx_directory):
-            os.mkdir(target_sphinx_directory)
-        
         target_docfx_directory = os.path.join(target_documentation_directory, "_docfx")
         if not os.path.exists(target_docfx_directory):
             os.mkdir(target_docfx_directory)
-        
-        # "sphinx-quickstart", "-q", "-p", "'adg'", "-a", "'automated'", "-v", "'1.0'" 
+
+        folderized_package = library.replace("-", "/")
+        python_package_folder = os.listdir(os.path.join(virtual_environment_directory, "lib"))[0]
+
+        target_library_directory = os.path.join(virtual_environment_directory, "lib", python_package_folder, "site-packages", folderized_package)
+        print(target_library_directory)
+
         sphinx_quickstart_path = os.path.join("bin", "sphinx-quickstart")
-        print(subprocess.check_output("cd " + target_sphinx_directory + f" && ./../../{sphinx_quickstart_path} -q -p 'adg' -a 'automated' -v '1.0'", shell=True))
+        print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_quickstart_path} -q -p 'adg' -a 'automated' -v '1.0'", shell=True))
 
     @staticmethod
     def document_node_library(library, docpath):
