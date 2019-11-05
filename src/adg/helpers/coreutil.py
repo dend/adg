@@ -109,11 +109,35 @@ class LibraryDocumenter(object):
         folderized_package = library.replace("-", "/")
         python_package_folder = os.listdir(os.path.join(virtual_environment_directory, "lib"))[0]
 
-        target_library_directory = os.path.join(virtual_environment_directory, "lib", python_package_folder, "site-packages", folderized_package)
-        print(target_library_directory)
+        target_site_packages_folder = os.path.join(virtual_environment_directory, "lib", python_package_folder, "site-packages")
+        target_library_directory = os.path.join(target_site_packages_folder, folderized_package)
 
         sphinx_quickstart_path = os.path.join("bin", "sphinx-quickstart")
+        sphinx_apidoc_path = os.path.join("bin", "sphinx-apidoc")
+        sphinx_build_path = os.path.join("bin", "sphinx-build")
+
         print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_quickstart_path} -q -p 'adg' -a 'automated' -v '1.0'", shell=True))
+
+        # We need to update the configuration file for Sphinx, to make sure that we're documenting the right library.
+        configuration_file = os.path.join(target_library_directory, "conf.py")
+        filedata = ''
+        with open(configuration_file, 'r') as file :
+            filedata = file.read()
+
+        filedata = filedata.replace("extensions = []", "extensions = ['sphinx.ext.autodoc', 'docfx_yaml.extension']")
+
+        import_combination = "import os\nimport sys\n"
+
+        for directory in os.listdir(target_site_packages_folder):
+            import_combination += f"sys.path.append(os.path.abspath('../../{directory}'))\n"
+
+        filedata = filedata.replace("# import os", import_combination)
+
+        with open(configuration_file, 'w') as file:
+            file.write(filedata)
+
+        print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_apidoc_path} . -o . --module-first --no-headings --no-toc --implicit-namespaces", shell=True))
+        print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_build_path} . _build", shell=True))
 
     @staticmethod
     def document_node_library(library, docpath):
