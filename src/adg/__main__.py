@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 #cSpell:ignore nargs, macos, cygwin
 
 from sys import argv
-from helpers.types import OperatingSystem
-from helpers.commandprocessor import CommandProcessor
-from helpers.systemhelper import SystemHelper
+from adg.helpers.types import OperatingSystem
+from adg.helpers.commandprocessor import CommandProcessor
+from adg.helpers.systemhelper import SystemHelper
 import argparse
 
 parser = argparse.ArgumentParser(description='adg - version 1.0.8-june-2019')
