@@ -18,6 +18,6 @@ class CommandProcessor(object):
                 
                 print (f'[info] Collecting information on {len(command.library)} libraries...')
 
-                LibraryProcessor.process_libraries(command.library, command.platform, command.out)
+                LibraryProcessor.process_libraries(command.library, command.platform, command.out, command.format)
             else:
                 print ('[error] You need to specify --platform, --library and --out to generate documentation.')

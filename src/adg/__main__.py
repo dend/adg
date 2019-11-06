@@ -12,11 +12,13 @@ subparsers = parser.add_subparsers(dest="commands_parser")
 make_parser = subparsers.add_parser('make')
 
 make_parser.add_argument('--library', metavar='L', type=str, nargs='+',
-                   help='A single or space-separated list of libraries to document.')
+                   help='Library that needs to be documented.')
 make_parser.add_argument('--platform', type=str, metavar='P',
-                   help='Target platform for the documented library.')
+                   help='Target platform for the documented library.\nAcceptable values: python')
 make_parser.add_argument('--out', type=str, metavar='O',
                    help='Output path for the generated documentation.')
+make_parser.add_argument('--format', type=str, metavar='F',
+                   help='Output format for the documentation.\nAcceptable values: yaml, html.')
 
 args = parser.parse_args()
 

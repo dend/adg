@@ -44,13 +44,13 @@ class LibraryInstaller(object):
 
 class PresenceVerifier(object):
     @staticmethod
-    def docfx_exists(auto_install):
+    def docfx_exists(auto_install = False):
         if (os.path.exists('dbin/docfx/docfx.exe')):
             return True
         else:
             if auto_install:
                 print('[info] Downloading and extracting DocFX...')
-                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.42.4/docfx.zip", "temp_docfx.zip")
+                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.47/docfx.zip", "temp_docfx.zip")
                 with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
                     zip_ref.extractall("dbin/docfx")
                 return True
@@ -62,7 +62,7 @@ class PresenceVerifier(object):
 
 class LibraryProcessor(object):
     @staticmethod
-    def process_libraries(libraries, platform, docpath):
+    def process_libraries(libraries, platform, docpath, out_format):
         if (platform.lower() == 'python'):
             for library in libraries:
                 if (Validator.validate_url(library)):
@@ -82,14 +82,14 @@ class LibraryProcessor(object):
                     LibraryInstaller.install_python_library(library)
 
                     # TODO: Need to implement a check that verifies whether the library was really installed.
-                    LibraryDocumenter.document_python_library(library, docpath)
+                    LibraryDocumenter.document_python_library(library, docpath, out_format)
                     
                     # Perform cleanup and just remove the folder where the virtual environment was set up.
                     #shutil.rmtree('dtemp')
 
 class LibraryDocumenter(object):
     @staticmethod
-    def document_python_library(library, docpath):
+    def document_python_library(library, docpath, out_format):
         print (f'[info] Attempting to document {library} from PyPI.')
         true_docpath = docpath
         if not docpath:
@@ -137,19 +137,45 @@ class LibraryDocumenter(object):
         print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_apidoc_path} . -o . --module-first --no-headings --no-toc --implicit-namespaces", shell=True))
         print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_build_path} . _build", shell=True))
 
-        src_files = os.listdir(target_docfx_yaml_directory)
-        for file_name in src_files:
-            full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
-            if os.path.isfile(full_file_name):
-                shutil.copy(full_file_name, docpath)
+        # .lower() should likely be enough for a case-insensitive check since we are
+        # working with a limited set of values. Otherwise, we would need to check .casefold().
+        if out_format.lower() == 'yaml':
+            src_files = os.listdir(target_docfx_yaml_directory)
+            for file_name in src_files:
+                full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
+                if os.path.isfile(full_file_name):
+                    shutil.copy(full_file_name, docpath)
+        elif out_format.lower() == 'html':
+            if PresenceVerifier.docfx_exists(auto_install = True):
+                # DocFX exists. We can proceed.
+                print(subprocess.check_output("cd " + docpath + " && mono ./../dbin/docfx/docfx.exe init -q", shell=True))
 
-    @staticmethod
-    def document_node_library(library, docpath):
-        true_docpath = docpath
-        if not docpath:
-            true_docpath = os.getcwd()
+                src_files = os.listdir(target_docfx_yaml_directory)
+                for file_name in src_files:
+                    full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
+                    if os.path.isfile(full_file_name):
+                        shutil.copy(full_file_name, os.path.join(docpath, "docfx_project", "api"))
 
-        #process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                project_path = os.path.join(docpath, "docfx_project")
+                print(ConsoleUtil.pretty_stdout(subprocess.check_output("cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
+
+                site_path = os.path.join(project_path, "_site")
+                src_files = os.listdir(site_path)
+                for file_name in src_files:
+                    full_file_name = os.path.join(site_path, file_name)
+                    shutil.copy(full_file_name, os.path.join(docpath))
+                
+                shutil.rmtree(project_path)
+            else:
+                print("[error] Could not work with DocFX. HTML output was not produced.")
+
+    # @staticmethod
+    # def document_node_library(library, docpath):
+    #     true_docpath = docpath
+    #     if not docpath:
+    #         true_docpath = os.getcwd()
+
+    #     #process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 class ConsoleUtil(object):
     @staticmethod
