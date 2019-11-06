@@ -16,6 +16,8 @@ import venv
 from distutils.dir_util import copy_tree
 
 virtual_environment_directory = "dtemp"
+docfx_file_name = "temp_docfx.zip"
+binary_directory = "dbin"
 
 class Validator(object):
     @staticmethod
@@ -46,14 +48,14 @@ class LibraryInstaller(object):
 class PresenceVerifier(object):
     @staticmethod
     def docfx_exists(auto_install = False):
-        if (os.path.exists('dbin/docfx/docfx.exe')):
+        if (os.path.exists(os.path.join(binary_directory, "docfx", "docfx.exe"))):
             return True
         else:
             if auto_install:
                 print('[info] Downloading and extracting DocFX...')
-                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.47/docfx.zip", "temp_docfx.zip")
-                with zipfile.ZipFile("temp_docfx.zip", "r") as zip_ref:
-                    zip_ref.extractall("dbin/docfx")
+                urllib.request.urlretrieve("https://github.com/dotnet/docfx/releases/download/v2.47/docfx.zip", docfx_file_name)
+                with zipfile.ZipFile(docfx_file_name, "r") as zip_ref:
+                    zip_ref.extractall(os.path.join(binary_directory, "docfx"))
                 return True
             return False
 
@@ -158,12 +160,14 @@ class LibraryDocumenter(object):
                         shutil.copy(full_file_name, os.path.join(docpath, "docfx_project", "api"))
 
                 project_path = os.path.join(docpath, "docfx_project")
-                print(ConsoleUtil.pretty_stdout(subprocess.check_output("cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
+                print(Util.pretty_stdout(subprocess.check_output("cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
 
                 site_path = os.path.join(project_path, "_site")
                 copy_tree(site_path, docpath)
                 
                 shutil.rmtree(project_path)
+
+                Util.cleanup_artifacts()
             else:
                 print("[error] Could not work with DocFX. HTML output was not produced.")
 
@@ -175,10 +179,20 @@ class LibraryDocumenter(object):
 
     #     #process_result = subprocess.run(['pip3', 'list',], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-class ConsoleUtil(object):
+class Util(object):
     @staticmethod
     def pretty_stdout(stdout):
         output = str(stdout)
         output = output.split('\\n')
         for x in range(len(output)):
             print (output[x])
+    
+    @staticmethod
+    def cleanup_artifacts():
+        if os.path.exists(docfx_file_name):
+            os.remove(docfx_file_name)
+        if os.path.exists(binary_directory):
+            shutil.rmtree(binary_directory)
+        if os.path.exists(virtual_environment_directory):
+            shutil.rmtree(virtual_environment_directory)
+        
