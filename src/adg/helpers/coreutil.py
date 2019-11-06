@@ -95,22 +95,18 @@ class LibraryDocumenter(object):
         if not docpath:
             true_docpath = os.getcwd()
 
+        if not os.path.exists(true_docpath):
+            os.mkdir(true_docpath)
+
         # Make sure that we install the documentation pre-requisites. These are the tools that will generate the final output.
         LibraryInstaller.install_python_library("sphinx-docfx-yaml")
-
-        target_documentation_directory = os.path.join(virtual_environment_directory, "_documentation")
-        if not os.path.exists(target_documentation_directory):
-            os.mkdir(target_documentation_directory)
-
-        target_docfx_directory = os.path.join(target_documentation_directory, "_docfx")
-        if not os.path.exists(target_docfx_directory):
-            os.mkdir(target_docfx_directory)
 
         folderized_package = library.replace("-", "/")
         python_package_folder = os.listdir(os.path.join(virtual_environment_directory, "lib"))[0]
 
-        target_site_packages_folder = os.path.join(virtual_environment_directory, "lib", python_package_folder, "site-packages")
-        target_library_directory = os.path.join(target_site_packages_folder, folderized_package)
+        target_site_packages_directory = os.path.join(virtual_environment_directory, "lib", python_package_folder, "site-packages")
+        target_library_directory = os.path.join(target_site_packages_directory, folderized_package)
+        target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
 
         sphinx_quickstart_path = os.path.join("bin", "sphinx-quickstart")
         sphinx_apidoc_path = os.path.join("bin", "sphinx-apidoc")
@@ -128,8 +124,10 @@ class LibraryDocumenter(object):
 
         import_combination = "import os\nimport sys\n"
 
-        for directory in os.listdir(target_site_packages_folder):
-            import_combination += f"sys.path.append(os.path.abspath('../../{directory}'))\n"
+        directories = [x for x in os.listdir(target_site_packages_directory) if os.path.isdir(os.path.join(target_site_packages_directory,x))]
+        for directory in directories:
+            if (not directory.startswith("_")):
+                import_combination += f"sys.path.append(os.path.abspath('../../{directory}'))\n"
 
         filedata = filedata.replace("# import os", import_combination)
 
@@ -138,6 +136,12 @@ class LibraryDocumenter(object):
 
         print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_apidoc_path} . -o . --module-first --no-headings --no-toc --implicit-namespaces", shell=True))
         print(subprocess.check_output("cd " + target_library_directory + f" && ./../../../../../{sphinx_build_path} . _build", shell=True))
+
+        src_files = os.listdir(target_docfx_yaml_directory)
+        for file_name in src_files:
+            full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, docpath)
 
     @staticmethod
     def document_node_library(library, docpath):

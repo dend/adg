@@ -5,4 +5,5 @@ src/dbin/*
 src/dtemp/*
 .DS_Store
 *.zip
+delta/
 src/dsite/*
