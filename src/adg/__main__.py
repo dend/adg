@@ -6,7 +6,7 @@ from adg.helpers.commandprocessor import CommandProcessor
 from adg.helpers.systemhelper import SystemHelper
 import argparse
 
-parser = argparse.ArgumentParser(description='adg - version 1.0.8-june-2019')
+parser = argparse.ArgumentParser(description='adg - version 1.0.9-november-2019')
 
 subparsers = parser.add_subparsers(dest="commands_parser")
 make_parser = subparsers.add_parser('make')

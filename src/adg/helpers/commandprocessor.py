@@ -14,7 +14,7 @@ class CommandProcessor(object):
 
                 if (platform == OperatingSystem.macos) or (platform == OperatingSystem.linux):
                     if (not PresenceVerifier.shell_command_exists('mono')):
-                        print ('[info] You are running on a system that requires the Mono framework installed, and it was not found. You might not be able to document .NET packages properly.')
+                        print ('[info] You are running on a system that requires the Mono framework installed, and it was not found. You might not be able to use DocFX.')
                 
                 print (f'[info] Collecting information on {len(command.library)} libraries...')
 

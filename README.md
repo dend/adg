@@ -12,3 +12,15 @@ Command Line Interface (CLI) for generating API documentation through DocFX, tha
 | REST       | `rest`                      | 🧱 Not Started     |
 | .NET       | `net`                       | 🧱 Not Started     |
 | Java       | `java`                      | 🧱 Not Started     |
+
+## Usage
+
+### Python
+
+To generate documentation for Python libraries, the current release supports artifacts from PyPI. To generate YAML documentation, run the following command:
+
+```bash
+python -m adg make --platform python --library azure-batch --out delta  
+```
+
+This will produce DocFX-compatible YAML files for the `azure-batch` library in the `delta` output folder.
