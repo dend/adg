@@ -13,6 +13,7 @@ import io
 import shutil
 import json
 import venv
+from distutils.dir_util import copy_tree
 
 virtual_environment_directory = "dtemp"
 
@@ -160,10 +161,7 @@ class LibraryDocumenter(object):
                 print(ConsoleUtil.pretty_stdout(subprocess.check_output("cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
 
                 site_path = os.path.join(project_path, "_site")
-                src_files = os.listdir(site_path)
-                for file_name in src_files:
-                    full_file_name = os.path.join(site_path, file_name)
-                    shutil.copy(full_file_name, os.path.join(docpath))
+                copy_tree(site_path, docpath)
                 
                 shutil.rmtree(project_path)
             else:
