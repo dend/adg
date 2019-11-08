@@ -184,7 +184,7 @@ class LibraryProcessor():
                             "cd " + docpath + " && mono ./../dbin/docfx/docfx.exe init -q", shell=True)))
                     elif operating_system == OperatingSystem.windows:
                         print(Util.pretty_stdout(subprocess.check_output(
-                            "powershell.exe -Command \"cd " + docpath + " ; ..\\..\\dbin\\docfx\\docfx.exe init -q\"", shell=True)))
+                            'powershell.exe -Command \"cd ' + docpath + ' ; ..\\..\\dbin\\docfx\\docfx.exe init -q\"', shell=True)))
                 except subprocess.CalledProcessError as called_proc_error:
                     print(f"[error] Could not run initiate a DocFX project.\n[error] {called_proc_error.output}")
 
@@ -201,7 +201,7 @@ class LibraryProcessor():
                             "cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
                     elif operating_system == OperatingSystem.windows:
                         print(Util.pretty_stdout(subprocess.check_output(
-                            "powershell.exe -Command \"cd " + project_path + "; ..\\..\\..\\dbin\\docfx\\docfx.exe\"", shell=True)))
+                            'powershell.exe -Command \"cd ' + project_path + '; ..\\..\\..\\dbin\\docfx\\docfx.exe\"', shell=True)))
                 except subprocess.CalledProcessError as called_proc_error:
                     print(f"[error] Could not build the DocFX project.\n[error] {called_proc_error.output}")
 
