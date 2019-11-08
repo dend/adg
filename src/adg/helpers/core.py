@@ -103,7 +103,6 @@ class LibraryProcessor():
         LibraryInstaller.install_python_library("sphinx-docfx-yaml", operating_system)
 
         python_package_folder = os.listdir(os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "lib"))[0]
-        print(f"Package folder: {python_package_folder}")
 
         target_site_packages_directory = ''
         if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
@@ -179,12 +178,13 @@ class LibraryProcessor():
             if Util.docfx_exists(auto_install=True):
                 # DocFX exists. We can proceed.
                 try:
+                    print(f"Documentation path: {docpath}")
                     if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
                         print(Util.pretty_stdout(subprocess.check_output(
                             "cd " + docpath + " && mono ./../dbin/docfx/docfx.exe init -q", shell=True)))
                     elif operating_system == OperatingSystem.windows:
                         print(Util.pretty_stdout(subprocess.check_output(
-                            'powershell.exe -Command \"cd ' + docpath + ' ; ..\\..\\dbin\\docfx\\docfx.exe init -q\"', shell=True)))
+                            'powershell.exe -Command \"cd ' + docpath + ' ; ..\\dbin\\docfx\\docfx.exe init -q\"', shell=True)))
                 except subprocess.CalledProcessError as called_proc_error:
                     print(f"[error] Could not run initiate a DocFX project.\n[error] {called_proc_error.output}")
 
@@ -193,7 +193,7 @@ class LibraryProcessor():
                     full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
                     if os.path.isfile(full_file_name):
                         shutil.copy(full_file_name, os.path.join(docpath, "docfx_project", "api"))
-                
+
                 try:
                     project_path = os.path.join(docpath, "docfx_project")
                     if operating_system in (OperatingSystem.macos, OperatingSystem.linux):   
@@ -201,7 +201,7 @@ class LibraryProcessor():
                             "cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
                     elif operating_system == OperatingSystem.windows:
                         print(Util.pretty_stdout(subprocess.check_output(
-                            'powershell.exe -Command \"cd ' + project_path + '; ..\\..\\..\\dbin\\docfx\\docfx.exe\"', shell=True)))
+                            'powershell.exe -Command \"cd ' + project_path + '; ..\\..\\dbin\\docfx\\docfx.exe\"', shell=True)))
                 except subprocess.CalledProcessError as called_proc_error:
                     print(f"[error] Could not build the DocFX project.\n[error] {called_proc_error.output}")
 
