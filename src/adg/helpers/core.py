@@ -1,5 +1,5 @@
 # cSpell:ignore shutil, dtemp, dbin, docfx, dsite
-# cSpell:ignore venv, macos, rmtree, folderized, getcwd, mkdir, isdir, isfile
+# cSpell:ignore venv, macos, rmtree, folderize, getcwd, mkdir, isdir, isfile
 
 '''
 Module responsible for the processing of user input
@@ -18,6 +18,7 @@ import sys
 from urllib.parse import urlparse
 from distutils.dir_util import copy_tree
 from .types import OperatingSystem
+import re
 
 VIRTUAL_ENVIRONMENT_DIRECTORY = "dtemp"
 DOCFX_FILE_NAME = "temp_docfx.zip"
@@ -106,7 +107,7 @@ class LibraryProcessor():
         target_site_packages_directory = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY,
                                                       "lib", python_package_folder, "site-packages")
         target_library_directory = os.path.join(target_site_packages_directory,
-                                                library.replace("-", "/"))
+                                                Util.folderize_package_name(library))
         target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
 
         if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
@@ -254,4 +255,9 @@ class Util():
             return OperatingSystem.windows
 
         return OperatingSystem.other
+
+    @staticmethod
+    def folderize_package_name(package_name):
+        split_name = re.findall(r"[\w']+", package_name)
+        return os.path.join(*split_name)
         
