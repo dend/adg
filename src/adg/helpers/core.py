@@ -105,8 +105,14 @@ class LibraryProcessor():
         python_package_folder = os.listdir(os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "lib"))[0]
         print(f"Package folder: {python_package_folder}")
 
-        target_site_packages_directory = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY,
-                                                      "lib", python_package_folder, "site-packages")
+        target_site_packages_directory = ''
+        if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+            target_site_packages_directory = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY,
+                                                        "lib", python_package_folder, "site-packages")
+        elif operating_system == OperatingSystem.windows:
+            target_site_packages_directory = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY,
+                                                        "lib", python_package_folder)
+
         target_library_directory = os.path.join(target_site_packages_directory,
                                                 Util.folderize_package_name(library))
         target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
