@@ -103,6 +103,7 @@ class LibraryProcessor():
         LibraryInstaller.install_python_library("sphinx-docfx-yaml",operating_system)
 
         python_package_folder = os.listdir(os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "lib"))[0]
+        print(f"Package folder: {python_package_folder}")
 
         target_site_packages_directory = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY,
                                                       "lib", python_package_folder, "site-packages")
@@ -113,6 +114,9 @@ class LibraryProcessor():
         if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
             print(Util.pretty_stdout(subprocess.check_output(
                 "cd " + target_library_directory + f" && ./../../../../../{os.path.join('bin', 'sphinx-quickstart')} -q -p 'adg' -a 'automated' -v '1.0'", shell=True)))
+        elif operating_system == OperatingSystem.windows:
+            print(Util.pretty_stdout(subprocess.check_output(
+                "cd " + target_library_directory + f" ; & ../../../{os.path.join('Scripts', 'sphinx-quickstart')} -q -p 'adg' -a 'automated' -v '1.0'", shell=True)))
 
         # We need to update the configuration file for Sphinx,
         # to make sure that we're documenting the right library.
