@@ -15,6 +15,8 @@ Command Line Interface (CLI) tool for generating API documentation with [DocFX](
 
 ## Setup
 
+Before starting, make sure that you have at least [Python 3.8](https://www.python.org/downloads/) installed.
+
 At this time, `adg` does not yet have a package on [PyPI](https://pypi.org/), therefore installation is manual. To prepare everything, make sure to follow the steps:
 
 1. Clone the repository or download the ZIP.
