@@ -100,7 +100,7 @@ class LibraryProcessor():
 
         # Make sure that we install the documentation pre-requisites.
         # These are the tools that will generate the final output.
-        LibraryInstaller.install_python_library("sphinx-docfx-yaml",operating_system)
+        LibraryInstaller.install_python_library("sphinx-docfx-yaml", operating_system)
 
         python_package_folder = os.listdir(os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "lib"))[0]
         print(f"Package folder: {python_package_folder}")
@@ -116,6 +116,8 @@ class LibraryProcessor():
         target_library_directory = os.path.join(target_site_packages_directory,
                                                 Util.folderize_package_name(library))
         target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
+
+        print(f"Target folder library: {target_library_directory}")
 
         if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
             print(Util.pretty_stdout(subprocess.check_output(
