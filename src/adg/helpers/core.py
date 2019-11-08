@@ -118,6 +118,7 @@ class LibraryProcessor():
         target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
 
         print(f"Target folder library: {target_library_directory}")
+        print(f"Operating in: {os.getcwd()}")
 
         if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
             print(Util.pretty_stdout(subprocess.check_output(
