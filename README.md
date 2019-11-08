@@ -1,4 +1,4 @@
-# API Documentation Generation CLI
+# 🚀 `adg` - API Documentation Generation CLI
 
 Command Line Interface (CLI) tool for generating API documentation with [DocFX](https://dotnet.github.io/docfx/), that abstracts out the complexity of individual platform tools behind a simple set of commands.
 
