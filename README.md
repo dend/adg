@@ -19,7 +19,7 @@ At this time, `adg` does not yet have a package on [PyPI](https://pypi.org/), th
 
 1. Clone the repository or download the ZIP.
 2. Create a new [Python virtual environment](https://docs.python.org/3/tutorial/venv.html) with `python -m venv adg_env`.
-3. Activate the environment with `source adg_env/bin/activate`.
+3. Activate the environment with `source adg_env/bin/activate` (_on macOS or Linux_) or `.\adg_env\Scripts\activate` (_on Windows with PowerShell_).
 4. Run the documentation commands within the virtual environment.
 
 ## Usage
