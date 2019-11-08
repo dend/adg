@@ -117,15 +117,15 @@ class LibraryProcessor():
                                                 Util.folderize_package_name(library))
         target_docfx_yaml_directory = os.path.join(target_library_directory, "_build", "docfx_yaml")
 
-        print(f"Target folder library: {target_library_directory}")
-        print(f"Operating in: {os.getcwd()}")
-
-        if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
-            print(Util.pretty_stdout(subprocess.check_output(
-                "cd " + target_library_directory + f" && ./../../../../../{os.path.join('bin', 'sphinx-quickstart')} -q -p 'adg' -a 'automated' -v '1.0'", shell=True)))
-        elif operating_system == OperatingSystem.windows:
-            print(Util.pretty_stdout(subprocess.check_output(
-                "powershell.exe -Command \"cd " + target_library_directory + f"; & ..\\..\\..\\..\\{os.path.join('Scripts', 'sphinx-quickstart.exe')} -q -p 'adg' -a 'automated' -v '1.0'\"", shell=True)))
+        try:
+            if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "cd " + target_library_directory + f" && ./../../../../../{os.path.join('bin', 'sphinx-quickstart')} -q -p 'adg' -a 'automated' -v '1.0'", shell=True)))
+            elif operating_system == OperatingSystem.windows:
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "powershell.exe -Command \"cd " + target_library_directory + f"; & ..\\..\\..\\..\\{os.path.join('Scripts', 'sphinx-quickstart.exe')} -q -p 'adg' -a 'automated' -v '1.0'\"", shell=True)))
+        except subprocess.CalledProcessError as called_proc_error:
+            print(f"[error] Could not run sphinx-quickstart. Check that the folder with the package has no Sphinx configuration files.\n[error] {called_proc_error.output}")
 
         # We need to update the configuration file for Sphinx,
         # to make sure that we're documenting the right library.
@@ -151,18 +151,21 @@ class LibraryProcessor():
         with open(configuration_file, 'w') as file:
             file.write(filedata)
 
-        if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
-            print(Util.pretty_stdout(subprocess.check_output(
-                "cd " + target_library_directory + f' && ./../../../../../{os.path.join("bin", "sphinx-apidoc")} . -o . --module-first --no-headings --no-toc --implicit-namespaces',
-                shell=True)))
-            print(Util.pretty_stdout(subprocess.check_output(
-                "cd " + target_library_directory + f' && ./../../../../../{os.path.join("bin", "sphinx-build")} . _build', shell=True)))
-        elif OperatingSystem.windows:
-            print(Util.pretty_stdout(subprocess.check_output(
-                "cd " + target_library_directory + f' ; & ..\\..\\..\\..\\{os.path.join("Scripts", "sphinx-apidoc.exe")} . -o . --module-first --no-headings --no-toc --implicit-namespaces',
-                shell=True)))
-            print(Util.pretty_stdout(subprocess.check_output(
-                "cd " + target_library_directory + f' ; & ..\\..\\..\\..\\{os.path.join("Scripts", "sphinx-build.exe")} . _build', shell=True)))
+        try:
+            if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "cd " + target_library_directory + f' && ./../../../../../{os.path.join("bin", "sphinx-apidoc")} . -o . --module-first --no-headings --no-toc --implicit-namespaces',
+                    shell=True)))
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "cd " + target_library_directory + f' && ./../../../../../{os.path.join("bin", "sphinx-build")} . _build', shell=True)))
+            elif OperatingSystem.windows:
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "powershell.exe -Command \"cd " + target_library_directory + f' ; & ..\\..\\..\\..\\{os.path.join("Scripts", "sphinx-apidoc.exe")} . -o . --module-first --no-headings --no-toc --implicit-namespaces\"',
+                    shell=True)))
+                print(Util.pretty_stdout(subprocess.check_output(
+                    "powershell.exe -Command \"cd " + target_library_directory + f' ; & ..\\..\\..\\..\\{os.path.join("Scripts", "sphinx-build.exe")} . _build\"', shell=True)))
+        except subprocess.CalledProcessError as called_proc_error:
+            print(f"[error] Could not run Sphinx documentation build.\n[error] {called_proc_error.output}")
 
         # .lower() should likely be enough for a case-insensitive check since we are
         # working with a limited set of values. Otherwise, we would need to check .casefold().
