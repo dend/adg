@@ -178,23 +178,32 @@ class LibraryProcessor():
         elif out_format.lower() == 'html':
             if Util.docfx_exists(auto_install=True):
                 # DocFX exists. We can proceed.
-                if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
-                    print(Util.pretty_stdout(subprocess.check_output(
-                        "cd " + docpath + " && mono ./../dbin/docfx/docfx.exe init -q", shell=True)))
-                elif operating_system == OperatingSystem.windows:
-                    print(Util.pretty_stdout(subprocess.check_output(
-                        "cd " + docpath + " ; & ..\\..\\dbin\\docfx\\docfx.exe init -q", shell=True)))
+                try:
+                    if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+                        print(Util.pretty_stdout(subprocess.check_output(
+                            "cd " + docpath + " && mono ./../dbin/docfx/docfx.exe init -q", shell=True)))
+                    elif operating_system == OperatingSystem.windows:
+                        print(Util.pretty_stdout(subprocess.check_output(
+                            "powershell.exe -Command \"cd " + docpath + " ; ..\\..\\dbin\\docfx\\docfx.exe init -q\"", shell=True)))
+                except subprocess.CalledProcessError as called_proc_error:
+                    print(f"[error] Could not run initiate a DocFX project.\n[error] {called_proc_error.output}")
 
                 src_files = os.listdir(target_docfx_yaml_directory)
                 for file_name in src_files:
                     full_file_name = os.path.join(target_docfx_yaml_directory, file_name)
                     if os.path.isfile(full_file_name):
                         shutil.copy(full_file_name, os.path.join(docpath, "docfx_project", "api"))
-
-                if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+                
+                try:
                     project_path = os.path.join(docpath, "docfx_project")
-                    print(Util.pretty_stdout(subprocess.check_output(
-                        "cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
+                    if operating_system in (OperatingSystem.macos, OperatingSystem.linux):   
+                        print(Util.pretty_stdout(subprocess.check_output(
+                            "cd " + project_path + " && mono ./../../dbin/docfx/docfx.exe", shell=True)))
+                    elif operating_system == OperatingSystem.windows:
+                        print(Util.pretty_stdout(subprocess.check_output(
+                            "powershell.exe -Command \"cd " + project_path + "; ..\\..\\..\\dbin\\docfx\\docfx.exe\"", shell=True)))
+                except subprocess.CalledProcessError as called_proc_error:
+                    print(f"[error] Could not build the DocFX project.\n[error] {called_proc_error.output}")
 
                 site_path = os.path.join(project_path, "_site")
                 copy_tree(site_path, docpath)
