@@ -30,12 +30,20 @@ class LibraryInstaller():
     '''
 
     @staticmethod
-    def install_python_library(library):
+    def install_python_library(library, operating_system):
         '''Installs a Python library to document.'''
 
         print(f"[info] Installing {library}...")
-        pip_path = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "bin", "pip")
-        subprocess.call([pip_path, "install", library])
+
+        python_path = ''
+        if operating_system in (OperatingSystem.macos, OperatingSystem.linux):
+            python_path = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "bin", "python")
+        elif operating_system == OperatingSystem.windows:
+            python_path = os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "Scripts", "python")
+        else:
+            return
+
+        subprocess.call([python_path, "-m", "pip", "install", library])
 
     @staticmethod
     def create_environment():
@@ -71,7 +79,7 @@ class LibraryProcessor():
                 else:
                     LibraryInstaller.create_environment()
 
-                    LibraryInstaller.install_python_library(library)
+                    LibraryInstaller.install_python_library(library, operating_system)
 
                     # TODO: Need to implement a check that verifies whether
                     # the library was really installed.
@@ -91,7 +99,7 @@ class LibraryProcessor():
 
         # Make sure that we install the documentation pre-requisites.
         # These are the tools that will generate the final output.
-        LibraryInstaller.install_python_library("sphinx-docfx-yaml")
+        LibraryInstaller.install_python_library("sphinx-docfx-yaml",operating_system)
 
         python_package_folder = os.listdir(os.path.join(VIRTUAL_ENVIRONMENT_DIRECTORY, "lib"))[0]
 
