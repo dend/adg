@@ -125,9 +125,9 @@ class LibraryProcessor():
                 "cd " + target_library_directory + f" && ./../../../../../{os.path.join('bin', 'sphinx-quickstart')} -q -p 'adg' -a 'automated' -v '1.0'", shell=True)))
         elif operating_system == OperatingSystem.windows:
             print(Util.pretty_stdout(subprocess.check_output(
-                "powershell.exe Get-Location ; ", shell=True)))
+                "powershell.exe Get-Location ; cd " + target_library_directory, shell=True)))
 
-#cd " + target_library_directory + f" ; & ..\\..\\..\\..\\{os.path.join('Scripts', 'sphinx-quickstart.exe')} -q -p 'adg' -a 'automated' -v '1.0'
+# + f" ; & ..\\..\\..\\..\\{os.path.join('Scripts', 'sphinx-quickstart.exe')} -q -p 'adg' -a 'automated' -v '1.0'
 
         # We need to update the configuration file for Sphinx,
         # to make sure that we're documenting the right library.
